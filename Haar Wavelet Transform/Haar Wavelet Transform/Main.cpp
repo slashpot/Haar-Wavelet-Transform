@@ -6,19 +6,22 @@
 using namespace std;
 using namespace cv;
 
-void Decomposition(Mat source, int &stage);
-void composite(Mat LL, Mat HL, Mat LH, Mat HH);
+int stage = 0;
+int decompositeTimes;
+
+void Decomposite(Mat source);
+void Composite(Mat LL, Mat HL, Mat LH, Mat HH);
 
 int main() {
-	int stage = 0;
 	Mat source = imread("Images/Lenna.png", CV_LOAD_IMAGE_GRAYSCALE);
 	source.convertTo(source, CV_32F, 1 / 255.0);
-	imshow("Source", source);
-	waitKey(1);
-	Decomposition(source, stage);
+
+	cout << "How many times do you want to decomposite: ";
+	cin >> decompositeTimes;
+	Decomposite(source);
 }
 
-void Decomposition(Mat source,int &stage) {
+void Decomposite(Mat source) {
 	Mat L = Mat::zeros(source.rows, source.cols / 2, CV_32F);
 	Mat H = Mat::zeros(source.rows, source.cols / 2, CV_32F);
 
@@ -62,19 +65,49 @@ void Decomposition(Mat source,int &stage) {
 	HH.copyTo(result(Rect(HH.cols, HH.rows, HH.cols, HH.rows)));
 
 	stage++;
-	string windowName = "stage " + to_string(stage);
-	namedWindow(windowName, WINDOW_NORMAL);
+	string windowName = "Decomposition: stage " + to_string(stage);
+	namedWindow(windowName, WINDOW_AUTOSIZE);
 	imshow(windowName, result);
-	waitKey(1);
+	waitKey(0);
 
-	int choice;
-	cout << "Choose to decomposite or composite(1: Decomposite / 2: Composite): ";
-	cin >> choice;
-	cout << endl;
-	if (choice == 1)
-		Decomposition(LL, stage);
+	if (stage != decompositeTimes)
+		Decomposite(LL);
+
+	Composite(LL, HL, LH, HH);
 }
 
-void composite(Mat LL, Mat HL, Mat LH, Mat HH) {
+void Composite(Mat LL, Mat HL, Mat LH, Mat HH) {
+	Mat L = Mat::zeros(LL.rows * 2, LL.cols, CV_32F);
+	Mat H = Mat::zeros(HH.rows * 2, HH.cols, CV_32F);
 
+	for (int y = 0; y < LL.rows; y++) {
+		for (int x = 0; x < LL.cols; x++) {
+			float a = LL.at<float>(y, x);
+			float b = LH.at<float>(y, x);
+			L.at<float>(y * 2, x) = a + b;
+			L.at<float>(y * 2 + 1, x) = a - b;
+
+			float c = HL.at<float>(y, x);
+			float d = HH.at<float>(y, x);
+			H.at<float>(y * 2, x) = c + d;
+			H.at<float>(y * 2 + 1, x) = c - d;
+		}
+	}
+
+	Mat result = Mat::zeros(LL.rows * 2, LL.cols * 2, CV_32F);
+	
+	for (int y = 0; y < L.rows; y++) {
+		for (int x = 0; x < L.cols; x++) {
+			float a = L.at<float>(y, x);
+			float b = H.at<float>(y, x);
+			result.at<float>(y, x * 2) = a + b;
+			result.at<float>(y, x * 2 + 1) = a - b;
+		}
+	}
+	
+	stage--;
+	string windowName = "Composite: stage " + to_string(stage);
+	namedWindow(windowName, WINDOW_AUTOSIZE);
+	imshow(windowName, result);
+	waitKey(0);
 }
