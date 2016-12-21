@@ -10,7 +10,7 @@ int stage = 0;
 int decompositeTimes;
 
 void Decomposite(Mat source);
-void Composite(Mat LL, Mat HL, Mat LH, Mat HH);
+void Recnstruct(Mat LL, Mat HL, Mat LH, Mat HH);
 
 int main() {
 	Mat source = imread("Images/Lenna.png", CV_LOAD_IMAGE_GRAYSCALE);
@@ -65,7 +65,11 @@ void Decomposite(Mat source) {
 	HH.copyTo(result(Rect(HH.cols, HH.rows, HH.cols, HH.rows)));
 
 	stage++;
-	string windowName = "Decomposition: stage " + to_string(stage);
+	string windowName = "Decomposition_stage " + to_string(stage);
+	Mat savedImg;
+	result.convertTo(savedImg, CV_8U, 255);
+	imwrite("Images/" + windowName + ".png", savedImg);
+
 	namedWindow(windowName, WINDOW_AUTOSIZE);
 	imshow(windowName, result);
 	waitKey(0);
@@ -73,10 +77,10 @@ void Decomposite(Mat source) {
 	if (stage != decompositeTimes)
 		Decomposite(LL);
 
-	Composite(LL, HL, LH, HH);
+	Recnstruct(LL, HL, LH, HH);
 }
 
-void Composite(Mat LL, Mat HL, Mat LH, Mat HH) {
+void Recnstruct(Mat LL, Mat HL, Mat LH, Mat HH) {
 	Mat L = Mat::zeros(LL.rows * 2, LL.cols, CV_32F);
 	Mat H = Mat::zeros(HH.rows * 2, HH.cols, CV_32F);
 
@@ -106,7 +110,11 @@ void Composite(Mat LL, Mat HL, Mat LH, Mat HH) {
 	}
 	
 	stage--;
-	string windowName = "Composite: stage " + to_string(stage);
+	string windowName = "Recnstruction_stage " + to_string(stage);
+	Mat savedImg;
+	result.convertTo(savedImg, CV_8U, 255);
+	imwrite("Images/" + windowName + ".png", savedImg);
+
 	namedWindow(windowName, WINDOW_AUTOSIZE);
 	imshow(windowName, result);
 	waitKey(0);
