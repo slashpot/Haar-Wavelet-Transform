@@ -30,7 +30,7 @@ void Decomposite(Mat source) {
 			float a = source.at<float>(y, x);
 			float b = source.at<float>(y, x + 1);
 			L.at<float>(y, x / 2) = (a + b) / 2.0f;
-			H.at<float>(y, x / 2) = (a - b);
+			H.at<float>(y, x / 2) = (a - b) / 2.0f;
 		}
 	}
 
