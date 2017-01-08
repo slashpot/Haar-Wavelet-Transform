@@ -13,7 +13,7 @@ void Decomposite(Mat source);
 void Recnstruct(Mat LL, Mat HL, Mat LH, Mat HH);
 
 int main() {
-	Mat source = imread("Images/Lenna.png", CV_LOAD_IMAGE_GRAYSCALE);
+	Mat source = imread("Images/NoPartyForCaoDong.jpg", CV_LOAD_IMAGE_GRAYSCALE);
 	source.convertTo(source, CV_32F, 1 / 255.0);
 
 	cout << "How many times do you want to decomposite: ";
@@ -45,7 +45,7 @@ void Decomposite(Mat source) {
 			float b = L.at<float>(y + 1, x);
 			LL.at<float>(y / 2, x) = (a + b) / 2.0f;
 			LH.at<float>(y / 2, x) = (a - b) / 2.0f;
-		}
+		} 
 	}
 
 	for (int y = 0; y <= H.rows - 2; y += 2) {
