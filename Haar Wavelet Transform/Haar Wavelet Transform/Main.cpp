@@ -10,7 +10,7 @@ int stage = 0;
 int decompositeTimes;
 
 void Decomposite(Mat source);
-void Recnstruct(Mat LL, Mat HL, Mat LH, Mat HH);
+void Reconstruct(Mat LL, Mat HL, Mat LH, Mat HH);
 
 int main() {
 	Mat source = imread("Images/NoPartyForCaoDong.jpg", CV_LOAD_IMAGE_GRAYSCALE);
@@ -77,10 +77,10 @@ void Decomposite(Mat source) {
 	if (stage != decompositeTimes)
 		Decomposite(LL);
 
-	Recnstruct(LL, HL, LH, HH);
+	Reconstruct(LL, HL, LH, HH);
 }
 
-void Recnstruct(Mat LL, Mat HL, Mat LH, Mat HH) {
+void Reconstruct(Mat LL, Mat HL, Mat LH, Mat HH) {
 	Mat L = Mat::zeros(LL.rows * 2, LL.cols, CV_32F);
 	Mat H = Mat::zeros(HH.rows * 2, HH.cols, CV_32F);
 
